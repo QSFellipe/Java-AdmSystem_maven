@@ -1,14 +1,36 @@
 
 package entities;
 
-import java.util.Date;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import java.time.LocalDate;
 
+@Entity
+@Table(name = "relatorios")
 public class Relatorio {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private Usuario idUsuario;
-    private Date dataCriacao;
+    
+    @ManyToOne
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
+    
+    @Column(name = "data_criacao")
+    @Temporal(TemporalType.DATE)
+    private LocalDate dataCriacao;
+    
     private String arquivo;
-
+    
     public Integer getId() {
         return id;
     }
@@ -18,18 +40,18 @@ public class Relatorio {
     }
 
     public Usuario getIdUsuario() {
-        return idUsuario;
+        return usuario;
     }
 
     public void setIdUsuario(Usuario idUsuario) {
-        this.idUsuario = idUsuario;
+        this.usuario = idUsuario;
     }
 
-    public Date getDataCriacao() {
+    public LocalDate getDataCriacao() {
         return dataCriacao;
     }
 
-    public void setDataCriacao(Date dataCriacao) {
+    public void setDataCriacao(LocalDate dataCriacao) {
         this.dataCriacao = dataCriacao;
     }
 

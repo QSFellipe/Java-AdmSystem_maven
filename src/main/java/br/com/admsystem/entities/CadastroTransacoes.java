@@ -1,19 +1,48 @@
 package entities;
 
-import java.util.Date;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import java.time.LocalDate;
 
+
+@Entity
+@Table(name = "cadastro_transacoes")    
 public class CadastroTransacoes {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer idUsuario;
+    
+    @ManyToOne
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
+    
     private String categoria;
     private String descricao;
-    private Date dataEntrada;
-    private Date dataSaida;
+    
+    @Column(name = "data_entrada")
+    @Temporal(TemporalType.DATE)
+    private LocalDate dataEntrada;
+    
+    @Column(name = "data_saida")
+    @Temporal(TemporalType.DATE)
+    private LocalDate dataSaida;
+    
+    @Column(name = "valor_entrada")
     private Double valorEntrada;
+    
+    @Column(name = "valor_saida")
     private Double valorSaida;
+    
     private String formaPagamento;
-
 
     public Integer getId() {
         return id;
@@ -23,12 +52,12 @@ public class CadastroTransacoes {
         this.id = id;
     }
 
-    public Integer getIdUsuario() {
-        return idUsuario;
+    public Usuario getIdUsuario() {
+        return usuario;
     }
 
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setIdUsuario(Usuario idUsuario) {
+        this.usuario = idUsuario;
     }
 
     public String getCategoria() {
@@ -47,19 +76,19 @@ public class CadastroTransacoes {
         this.descricao = descricao;
     }
 
-    public Date getDataEntrada() {
+    public LocalDate getDataEntrada() {
         return dataEntrada;
     }
 
-    public void setDataEntrada(Date dataEntrada) {
+    public void setDataEntrada(LocalDate dataEntrada) {
         this.dataEntrada = dataEntrada;
     }
 
-    public Date getDataSaida() {
+    public LocalDate getDataSaida() {
         return dataSaida;
     }
 
-    public void setDataSaida(Date dataSaida) {
+    public void setDataSaida(LocalDate dataSaida) {
         this.dataSaida = dataSaida;
     }
 
