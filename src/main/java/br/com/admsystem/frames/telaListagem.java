@@ -1,22 +1,18 @@
 package br.com.admsystem.frames;
 
+import br.com.admsystem.persistencia.CadastroTransacoesDAO;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import entities.CadastroTransacoes;
-import entities.ListaTransacoes;
-import java.io.FileNotFoundException;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.time.format.DateTimeFormatter;
 import javax.swing.table.DefaultTableModel;
-
 
 public class telaListagem extends javax.swing.JFrame {
 
@@ -24,12 +20,11 @@ public class telaListagem extends javax.swing.JFrame {
         initComponents();
         //Inicializa o frame com o Jtable preenchido
         listarTabela();
-        
+
         //Inicializa com o saldo de acordo com os lançamentos
         saldo();
         setLocationRelativeTo(null);
     }
-
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -200,16 +195,18 @@ public class telaListagem extends javax.swing.JFrame {
     private javax.swing.JTextField txSaldo;
     // End of variables declaration//GEN-END:variables
 
-        public void listarTabela() {
+    public void listarTabela() {
+        CadastroTransacoesDAO cDAO = new CadastroTransacoesDAO();
+
         //Define o modelo da tabela, referenciando tableTransacoes
         DefaultTableModel model = (DefaultTableModel) tableTransacoes.getModel();
         model.setRowCount(0);
 
         //Define o formato da data
-        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         //Adiciona a tabela os objetos criados com seus atributos
-        for (CadastroTransacoes u : ListaTransacoes.listar()) {
+        for (CadastroTransacoes u : cDAO.pesquisar()) {
             //Caso os campos não estejam preenchidos serão colocados N/A
             String dataEntradaFormatada = u.getDataEntrada() != null ? formato.format(u.getDataEntrada()) : "N/A";
             String dataSaidaFormatada = u.getDataSaida() != null ? formato.format(u.getDataSaida()) : "N/A";
@@ -218,10 +215,14 @@ public class telaListagem extends javax.swing.JFrame {
             String valorEntradaStr = u.getValorEntrada() != null ? u.getValorEntrada().toString() : "0.0";
             String valorSaidaStr = u.getValorSaida() != null ? u.getValorSaida().toString() : "0.0";
 
+            String idUsuarioStr = u.getUsuario() != null ? String.valueOf(u.getUsuario().getId()) : "N/A";
+
+            System.out.println("ID: " + u.getUsuario());
+
             //Adiciona ao Jtable os atributos
             model.addRow(new Object[]{
                 u.getId(),
-                u.getUsuario(),
+                idUsuarioStr,
                 u.getCategoria(),
                 u.getDescricao(),
                 dataEntradaFormatada,
@@ -234,11 +235,13 @@ public class telaListagem extends javax.swing.JFrame {
     }
 
     public void saldo() {
+        CadastroTransacoesDAO cDAO = new CadastroTransacoesDAO();
+
         //Criacão da variável saldo
         double saldoTotal = 0.0;
 
         //Captura os valores de entrada e saida da aplicacao
-        for (CadastroTransacoes transacao : ListaTransacoes.listar()) {
+        for (CadastroTransacoes transacao : cDAO.pesquisar()) {
             if (transacao.getValorEntrada() != null) {
                 saldoTotal += transacao.getValorEntrada();
             }
@@ -251,52 +254,50 @@ public class telaListagem extends javax.swing.JFrame {
         txSaldo.setText(String.format("R$ %.2f", saldoTotal));
     }
 
-    public void salvarArquivo(){
-        //Instacia a clasee JFileChooser
+    public void salvarArquivo() {
+        // Instancia a classe JFileChooser
         JFileChooser fileChooser = new JFileChooser();
 
-        //Define o título da janela de diálogo
+        // Define o título da janela de diálogo
         fileChooser.setDialogTitle("Salvar como");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         int selecaoUsuario = fileChooser.showSaveDialog(null);
 
-        //Verifica se o usuário confirmou o salvamento do arquivo
+        // Verifica se o usuário confirmou o salvamento do arquivo
         if (selecaoUsuario == JFileChooser.APPROVE_OPTION) {
-
-            //Armazena o caminho completo do arquivo selecionado pelo usuário
+            // Armazena o caminho completo do arquivo selecionado pelo usuário
             String caminhoArquivo = fileChooser.getSelectedFile().getAbsolutePath();
 
-            //Adiciona a extensão .pdf ao nome do arquivo, caso o usuário não tenha especificado
+            // Adiciona a extensão .pdf ao nome do arquivo, caso o usuário não tenha especificado
             if (!caminhoArquivo.toLowerCase().endsWith(".pdf")) {
                 caminhoArquivo += ".pdf";
             }
 
-            //Cria um documento PDF com orientação paisagem (A4 rotacionado)
+            // Cria um documento PDF com orientação paisagem (A4 rotacionado)
             Document documento = new Document(PageSize.A4.rotate());
 
             try (FileOutputStream arquivoPDF = new FileOutputStream(caminhoArquivo)) {
-                //Cria uma instância do PdfWriter para gerar o arquivo PDF
+                // Cria uma instância do PdfWriter para gerar o arquivo PDF
                 PdfWriter.getInstance(documento, arquivoPDF);
                 documento.open();
 
-                //Cria uma tabela no PDF com o mesmo número de colunas da JTable
+                // Cria uma tabela no PDF com o mesmo número de colunas da JTable
                 PdfPTable pdfTable = new PdfPTable(tableTransacoes.getColumnCount());
                 pdfTable.setWidthPercentage(100);
 
                 TableModel model = tableTransacoes.getModel();
 
-                //Adiciona os nomes das colunas ao PDF (cabeçalhos da tabela)
+                // Adiciona os nomes das colunas ao PDF (cabeçalhos da tabela)
                 for (int i = 0; i < model.getColumnCount(); i++) {
                     String nomeColuna = model.getColumnName(i);
-                    //Se o nome da coluna for nulo, usa um valor padrão
                     if (nomeColuna == null) {
                         nomeColuna = "Coluna " + (i + 1);
                     }
                     pdfTable.addCell(nomeColuna);
                 }
 
-                //Adiciona os dados das células da JTable ao PDF
+                // Adiciona os dados das células da JTable ao PDF
                 for (int i = 0; i < model.getRowCount(); i++) {
                     for (int j = 0; j < model.getColumnCount(); j++) {
                         Object value = model.getValueAt(i, j);
@@ -307,28 +308,42 @@ public class telaListagem extends javax.swing.JFrame {
                 // Adiciona a tabela ao documento PDF
                 documento.add(pdfTable);
 
+                documento.close();
+
                 JOptionPane.showMessageDialog(null, "Dados exportados com sucesso para:\n" + caminhoArquivo);
+
             } catch (DocumentException e) {
+                // Captura exceções específicas do iText
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(
                         null,
-                        "Erro ao exportar os dados:\n" + e.getMessage(),
-                        "Erro",
+                        "Erro ao exportar os dados para PDF:\n" + e.getMessage(),
+                        "Erro de Documento",
                         JOptionPane.ERROR_MESSAGE
                 );
 
-                // Fecha o documento para liberar recursos
             } catch (IOException e) {
+                // Captura problemas de I/O (erro ao salvar arquivo)
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(
                         null,
-                        "Erro ao salvar o arquivo:\n" + e.getMessage() + "\nVerifique o caminho e as permissões.",
+                        "Erro ao salvar o arquivo PDF:\n" + e.getMessage(),
                         "Erro de I/O",
-                        JOptionPane.ERROR_MESSAGE);
-                
-                // Fecha o documento para liberar recursos
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+            } catch (Exception e) {
+                // Captura qualquer outra exceção geral
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Erro desconhecido ao exportar os dados:\n" + e.getMessage(),
+                        "Erro Desconhecido",
+                        JOptionPane.ERROR_MESSAGE
+                );
             } finally {
-                if (documento != null && documento.isOpen()) {
+                // Garante que o documento será fechado após o uso
+                if (documento != null) {
                     documento.close();
                 }
             }

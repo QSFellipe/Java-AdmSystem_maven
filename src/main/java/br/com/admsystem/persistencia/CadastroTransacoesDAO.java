@@ -1,7 +1,11 @@
 package br.com.admsystem.persistencia;
 
 import entities.CadastroTransacoes;
+import entities.Usuario;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CadastroTransacoesDAO {
 
@@ -44,9 +48,23 @@ public class CadastroTransacoesDAO {
             JPAUtil.closeEntityManager();
         }
     }
-    
+
     //update cadastro
-    
     //buscar os cadastros
-    
+    public List<CadastroTransacoes> pesquisar() {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<CadastroTransacoes> cadastro = new ArrayList<>();
+
+        try {
+            Query consulta = em.createQuery("Select c From CadastroTransacoes c", CadastroTransacoes.class);
+            cadastro = consulta.getResultList();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("erro");
+        } finally {
+            JPAUtil.closeEntityManager();
+        }
+        return cadastro;
+    }
 }
