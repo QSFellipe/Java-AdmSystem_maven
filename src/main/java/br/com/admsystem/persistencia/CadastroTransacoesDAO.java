@@ -49,8 +49,29 @@ public class CadastroTransacoesDAO {
         }
     }
 
-    //update cadastro
-    //buscar os cadastros
+    public CadastroTransacoes obter(int id) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            return em.find(CadastroTransacoes.class, id);
+        } finally {
+            JPAUtil.closeEntityManager();
+        }
+    }
+
+    public void atualizar(CadastroTransacoes d) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(d);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            JPAUtil.closeEntityManager();
+        }
+    }
+
     public List<CadastroTransacoes> pesquisar() {
         EntityManager em = JPAUtil.getEntityManager();
         List<CadastroTransacoes> cadastro = new ArrayList<>();

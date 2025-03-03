@@ -14,6 +14,7 @@ entities\CadastroTransacoes.class
 br\com\admsystem\frames\telaSistema$2.class
 br\com\admsystem\frames\telaCadastroUsuario$1.class
 br\com\admsystem\frames\telaListagem$1.class
+br\com\admsystem\frames\telaListagem$4.class
 br\com\admsystem\frames\telaUsuario$3.class
 br\com\admsystem\frames\telaEntradasSaidas.class
 br\com\admsystem\frames\telaInicial$1.class

@@ -1,13 +1,12 @@
 package br.com.admsystem.frames;
 
+import br.com.admsystem.persistencia.CadastroTransacoesDAO;
 import entities.CadastroTransacoes;
 import entities.ListaTransacoes;
 import java.awt.HeadlessException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -369,14 +368,19 @@ public class telaAtualizar extends javax.swing.JFrame {
     private javax.swing.JFormattedTextField txValorEntrada;
     private javax.swing.JFormattedTextField txValorSaida;
     // End of variables declaration//GEN-END:variables
-        public void atualizar() {
-        // Obtém a transação com base no ID fornecido
-        CadastroTransacoes transacao = getId(Integer.parseInt(txID.getText()));
-
+    public void atualizar() {
         // Valida o ID antes de prosseguir
         if (!validaID()) {
             return;
         }
+
+        CadastroTransacoesDAO cDAO = new CadastroTransacoesDAO();
+
+        // Obtém o ID a partir do campo de texto
+        Integer id = Integer.parseInt(txID.getText());
+
+        // Obtém a transação com base no ID fornecido
+        CadastroTransacoes transacao = cDAO.obter(id);
 
         // Verifica se a transação foi encontrada
         if (transacao == null) {
@@ -386,7 +390,7 @@ public class telaAtualizar extends javax.swing.JFrame {
 
         // Configura o formato de data para validação e conversão
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        
+
         try {
 
             // Atualiza os dados da transação com os valores dos campos da interface
@@ -396,7 +400,7 @@ public class telaAtualizar extends javax.swing.JFrame {
 
             // Verifica e atualiza a data de entrada, se preenchida
             if (!txDataEntrada.getText().trim().isEmpty()) {
-                LocalDate dataEntrada = LocalDate.parse(txDataEntrada.getText().trim());
+                LocalDate dataEntrada = LocalDate.parse(txDataEntrada.getText().trim(), formato);
                 transacao.setDataEntrada(dataEntrada);
             } else {
                 transacao.setDataEntrada(null);
@@ -404,7 +408,7 @@ public class telaAtualizar extends javax.swing.JFrame {
 
             // Verifica e atualiza a data de saída, se preenchida
             if (!txDataSaida.getText().trim().isEmpty()) {
-                LocalDate dataSaida = LocalDate.parse(txDataSaida.getText().trim());
+                LocalDate dataSaida = LocalDate.parse(txDataSaida.getText().trim(), formato);
                 transacao.setDataSaida(dataSaida);
             } else {
                 transacao.setDataSaida(null);
@@ -426,11 +430,11 @@ public class telaAtualizar extends javax.swing.JFrame {
                 transacao.setValorSaida(null);
             }
 
-            JOptionPane.showMessageDialog(null, "Transação atualizada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-
             // Atualiza a lista de transações e limpa os campos
-            ListaTransacoes.listar();
+            cDAO.atualizar(transacao);
             limparCampos();
+            
+            JOptionPane.showMessageDialog(null, "Transação atualizada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Valor de entrada ou saída inválido. Use um número válido.", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -441,48 +445,49 @@ public class telaAtualizar extends javax.swing.JFrame {
 
     public void getDados(Integer id) {
         // Obtém a transação com base no ID fornecido
-        CadastroTransacoes cadastroTransacoes = getId(id);
-
+        CadastroTransacoesDAO cadastroTransacoes = new CadastroTransacoesDAO();
+        CadastroTransacoes cadastro = cadastroTransacoes.obter(id); 
+        
         // Configura o formato de data para exibição
-        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         // Verifica se a transação foi encontrada
         if (cadastroTransacoes != null) {
             try {
                 // Preenche os campos da interface com os dados da transação
-                cbCategoria.setSelectedItem(cadastroTransacoes.getCategoria());
-                cbFormaPagamento.setSelectedItem(cadastroTransacoes.getFormaPagamento());
+                cbCategoria.setSelectedItem(cadastro.getCategoria());
+                cbFormaPagamento.setSelectedItem(cadastro.getFormaPagamento());
 
                 // Preenche a data de entrada, se existir
-                if (cadastroTransacoes.getDataEntrada() != null) {
-                    txDataEntrada.setText(formato.format(cadastroTransacoes.getDataEntrada()));
+                if (cadastro.getDataEntrada() != null) {
+                    txDataEntrada.setText(formato.format(cadastro.getDataEntrada()));
                 } else {
                     txDataEntrada.setText("");
                 }
 
                 // Preenche a data de saída, se existir
-                if (cadastroTransacoes.getDataSaida() != null) {
-                    txDataSaida.setText(formato.format(cadastroTransacoes.getDataSaida()));
+                if (cadastro.getDataSaida() != null) {
+                    txDataSaida.setText(formato.format(cadastro.getDataSaida()));
                 } else {
                     txDataSaida.setText("");
                 }
 
                 // Preenche o valor de entrada, se existir
-                if (cadastroTransacoes.getValorEntrada() != null) {
-                    txValorEntrada.setText(cadastroTransacoes.getValorEntrada().toString());
+                if (cadastro.getValorEntrada() != null) {
+                    txValorEntrada.setText(cadastro.getValorEntrada().toString());
                 } else {
                     txValorEntrada.setText("");
                 }
 
                 // Preenche o valor de saída, se existir
-                if (cadastroTransacoes.getValorSaida() != null) {
-                    txValorSaida.setText(cadastroTransacoes.getValorSaida().toString());
+                if (cadastro.getValorSaida() != null) {
+                    txValorSaida.setText(cadastro.getValorSaida().toString());
                 } else {
                     txValorSaida.setText("");
                 }
 
                 // Preenche a descrição
-                txDescricao.setText(cadastroTransacoes.getDescricao());
+                txDescricao.setText(cadastro.getDescricao());
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Erro ao preencher os campos!" + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -490,30 +495,7 @@ public class telaAtualizar extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Nenhum lançamento encontrado com o ID fornecido!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    public CadastroTransacoes getId(Integer id) {
-        // Obtém a lista de transações cadastradas
-        List<CadastroTransacoes> transacoes = ListaTransacoes.listar();
-
-        System.out.println("Lista de transações: " + transacoes);
-
-        try {
-            // Verifica se a lista de transações não é nula e não está vazia
-            if (transacoes != null && !transacoes.isEmpty()) {
-                // Percorre a lista para encontrar a transação com o ID correspondente
-                for (CadastroTransacoes cadastro : transacoes) {
-                    if (cadastro.getId().equals(id)) {
-                        return cadastro;
-                    }
-                }
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Nenhum lançamento foi realizado!" + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-        return null;
-    }
-
+    
     public void limparCampos() {
         // Limpa todos os campos da interface
         cbCategoria.setSelectedItem("Selecione:");

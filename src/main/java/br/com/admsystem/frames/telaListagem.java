@@ -38,6 +38,7 @@ public class telaListagem extends javax.swing.JFrame {
         btnRelatorio = new javax.swing.JButton();
         btnVoltar = new javax.swing.JButton();
         txSaldo = new javax.swing.JTextField();
+        btnExcluir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -92,6 +93,16 @@ public class telaListagem extends javax.swing.JFrame {
         txSaldo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         txSaldo.setEnabled(false);
 
+        btnExcluir.setBackground(new java.awt.Color(0, 0, 255));
+        btnExcluir.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        btnExcluir.setForeground(new java.awt.Color(255, 255, 255));
+        btnExcluir.setText("Excluir");
+        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -104,9 +115,11 @@ public class telaListagem extends javax.swing.JFrame {
                 .addComponent(txSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnRelatorio, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
+                .addGap(18, 18, 18)
+                .addComponent(btnExcluir)
+                .addGap(67, 67, 67)
                 .addComponent(btnVoltar)
-                .addGap(70, 70, 70))
+                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(278, Short.MAX_VALUE)
                 .addComponent(lbTitle)
@@ -122,7 +135,8 @@ public class telaListagem extends javax.swing.JFrame {
                     .addComponent(lbSaldo)
                     .addComponent(btnRelatorio, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(37, 37, 37)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 590, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -148,6 +162,10 @@ public class telaListagem extends javax.swing.JFrame {
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnVoltarActionPerformed
+
+    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
+        excluir();
+    }//GEN-LAST:event_btnExcluirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -185,6 +203,7 @@ public class telaListagem extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnRelatorio;
     private javax.swing.JButton btnVoltar;
     private javax.swing.JPanel jPanel1;
@@ -349,6 +368,27 @@ public class telaListagem extends javax.swing.JFrame {
             }
         } else {
             JOptionPane.showMessageDialog(null, "Exportação cancelada pelo usuário.");
+        }
+    }
+
+    public void excluir() {
+        try {
+            if(tableTransacoes.getSelectedRow() == -1){
+                JOptionPane.showMessageDialog(null, "Selecione a linha que deseja excluir");
+            }
+            
+            if (tableTransacoes.getSelectedRow() >= 0) {
+                int id = (int) tableTransacoes.getValueAt(tableTransacoes.getSelectedRow(), 0);
+
+                int resposta = JOptionPane.showConfirmDialog(this, "Deseja mesmo excluir o registro " + id + "?");
+                if (resposta == 0) {
+                    CadastroTransacoesDAO cDao = new CadastroTransacoesDAO();
+                    cDao.excluir(id);
+                    JOptionPane.showMessageDialog(this, "Registro excluído com sucesso");
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Ocorreu uma falha:\n" + e.getMessage());
         }
     }
 }
