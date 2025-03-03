@@ -215,7 +215,7 @@ public class telaCadastroUsuario extends javax.swing.JFrame {
     public void cadastrarUser() {
         Usuario usuario = new Usuario();
         UsuarioDAO usuarioDAO = new UsuarioDAO();
-
+        
         //Verificacao dos campos
         if (!validarCampos()) {
             return;
@@ -235,12 +235,11 @@ public class telaCadastroUsuario extends javax.swing.JFrame {
 
         //Atribucao de valores dos campos para o objeto//
         try {
-            usuario.setEmail(txEmail.getText());
             usuario.setNomeUsuario(txNome.getText());
-            usuario.setCargo(comboCargo.getSelectedItem().toString());
+            usuario.setCargo(comboCargo.getSelectedItem().toString().trim());
             usuario.setDataCriacao(dataAtual);
             usuario.setSenha(txSenha.getText());  
-
+            
             usuarioDAO.cadastrar(usuario);
 
             JOptionPane.showMessageDialog(null, "Usuário " + usuario.getNomeUsuario() + " cadastrado com sucesso");

@@ -1,5 +1,6 @@
 package br.com.admsystem.frames;
 
+import br.com.admsystem.persistencia.CadastroTransacoesDAO;
 import br.com.admsystem.persistencia.UsuarioDAO;
 import entities.CadastroTransacoes;
 import entities.ListaTransacoes;
@@ -7,6 +8,7 @@ import entities.SessaoUsuario;
 import entities.Usuario;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -245,9 +247,7 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
 
-        if (cadastroEntradaseSaidas()) {
-            JOptionPane.showMessageDialog(null, "Cadastro feito com sucesso!");
-        }
+        cadastroEntradaseSaidas();
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
@@ -316,33 +316,21 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
     private javax.swing.JFormattedTextField txValorSaida;
     // End of variables declaration//GEN-END:variables
 
-    public boolean cadastroEntradaseSaidas() {
+    public void cadastroEntradaseSaidas() {
         // Verifica se os campos obrigatórios estão preenchidos
         if (!validarCampos()) {
-            return false;
+            return;
         }
 
         // Cria um formato de data para validar e converter as datas inseridas
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        // Cria um novo objeto para armazenar os dados da transação
-        int idUsuario = capturarIdUser();
+        
         CadastroTransacoes cadastro = new CadastroTransacoes();
-        UsuarioDAO uDAO = new UsuarioDAO();
-        Usuario usuario = uDAO.pesquisarId(idUsuario);
-       
-        cadastro.setId(gerarNovoId());
-        cadastro.setUsuario(usuario);
-
+        Usuario user = SessaoUsuario.getIdUsuarioLogado();
         try {
-            // Preenche os dados da transação com os valores dos campos da interface
-            cadastro.setCategoria(CbCategoria1.getSelectedItem().toString());
-            cadastro.setDescricao(txDescricao.getText());
-            cadastro.setFormaPagamento(CbFormaPagamento.getSelectedItem().toString());
-
             // Verifica e converte a data de entrada, se preenchida
             if (!txDataEntrada.getText().trim().isEmpty()) {
-                LocalDate dataEntrada = LocalDate.parse(txDataEntrada.getText().trim());
+                LocalDate dataEntrada = LocalDate.parse(txDataEntrada.getText().trim(), formato);
                 cadastro.setDataEntrada(dataEntrada);
             } else {
                 cadastro.setDataEntrada(null);
@@ -350,7 +338,7 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
 
             // Verifica e converte a data de saída, se preenchida
             if (!txDataSaida.getText().trim().isEmpty()) {
-                LocalDate dataSaida = LocalDate.parse(txDataSaida.getText().trim());
+                LocalDate dataSaida = LocalDate.parse(txDataSaida.getText().trim(), formato);
                 cadastro.setDataSaida(dataSaida);
             } else {
                 cadastro.setDataSaida(null);
@@ -371,12 +359,17 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
             } else {
                 cadastro.setValorSaida(null);
             }
+            
+            // Preenche os dados da transação com os valores dos campos da interface
+            cadastro.setUsuario(SessaoUsuario.getIdUsuarioLogado());
+            cadastro.setCategoria(CbCategoria1.getSelectedItem().toString());
+            cadastro.setDescricao(txDescricao.getText());
+            cadastro.setFormaPagamento(CbFormaPagamento.getSelectedItem().toString());
+            
+            JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso!");
 
-            // Exibe a transação no console para depuração
-            System.out.println("Adicionando transação: " + cadastro);
-            ListaTransacoes.adicionar(cadastro);
-            System.out.println("Lista após adicionar: " + ListaTransacoes.listar());
-
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao insirir a data");
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Valor de entrada ou saída inválido. Use um número válido.", "Erro", JOptionPane.ERROR_MESSAGE);
 
@@ -385,10 +378,10 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Erro ao cadastrar " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
 
-        ListaTransacoes.listar();
+        CadastroTransacoesDAO ctDAO = new CadastroTransacoesDAO();
+        ctDAO.cadastrar(cadastro);
         limparCampos();
 
-        return true;
     }
 
     public boolean validarCampos() {
@@ -403,13 +396,17 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "O campo 'Forma de Pagamento' é obrigatório.", "Erro", JOptionPane.ERROR_MESSAGE);
             return false;
         }
+        
+        if (txDataEntrada.getText().equals("") && txDataSaida.getText().equals("")) {
+            JOptionPane.showMessageDialog(null, "Preencha um dos campos data.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
 
         // Valida se a descrição foi preenchida
         if (txDescricao.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(null, "O campo 'Descrição' é obrigatório.", "Erro", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-
         return true;
     }
 
@@ -424,26 +421,4 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
         CbFormaPagamento.setSelectedItem("Selecione:");
     }
 
-    private int gerarNovoId() {
-        // Obtém a lista de transações cadastradas
-        List<CadastroTransacoes> transacoes = ListaTransacoes.listar();
-
-        // Se a lista estiver vazia, retorna o ID 1
-        if (transacoes.isEmpty()) {
-            return 1;
-        }
-
-        // Encontra o maior ID na lista e gera um novo ID incrementando o maior ID encontrado
-        int maiorId = transacoes.stream()
-                .mapToInt(CadastroTransacoes::getId)
-                .max()
-                .orElse(0);
-
-        return maiorId + 1;
-    }
-
-    private int capturarIdUser() {
-        // Retorna o ID do usuário logado na sessão
-        return SessaoUsuario.getIdUsuarioLogado();
-    }
 }

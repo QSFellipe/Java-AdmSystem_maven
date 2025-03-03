@@ -21,7 +21,7 @@ public class CadastroTransacoes {
     private Integer id;
     
     @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
+    @JoinColumn(name = "id_usuario")
     private Usuario usuario;
     
     private String categoria;
@@ -41,6 +41,7 @@ public class CadastroTransacoes {
     @Column(name = "valor_saida")
     private Double valorSaida;
     
+    @Column(name = "forma_pagamento")
     private String formaPagamento;
 
     public Integer getId() {
@@ -114,5 +115,4 @@ public class CadastroTransacoes {
     public void setFormaPagamento(String formaPagamento) {
         this.formaPagamento = formaPagamento;
     }
-
 }

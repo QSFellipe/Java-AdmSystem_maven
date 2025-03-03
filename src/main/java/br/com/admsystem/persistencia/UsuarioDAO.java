@@ -7,7 +7,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
-
+    
 public class UsuarioDAO {
 
     public Usuario cadastrar(Usuario u) {
@@ -75,15 +75,15 @@ public class UsuarioDAO {
     public Usuario pesquisarId(int id) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
-            TypedQuery<Usuario> consulta = em.createQuery("Select u from Usuarios u Where u.id = :u.id", Usuario.class);
+            TypedQuery<Usuario> consulta = em.createQuery("Select u from Usuario u Where u.id = :id", Usuario.class);
             consulta.setParameter("id", id);
             return consulta.getSingleResult();
 
         } catch (NoResultException e) {
-            System.out.println("Erro ao buscar usuario");
+            System.out.println("Usuário com ID " + id + " não encontrado.");
             return null;
         } catch (Exception e) {
-            System.out.println("Erro ao buscar usuario");
+            System.out.println("Erro ao buscar usuário: "+ e.getMessage());
             return null;
         } finally {
             JPAUtil.closeEntityManager();
@@ -95,7 +95,7 @@ public class UsuarioDAO {
         List<Usuario> usuario = new ArrayList<>();
 
         try {
-            Query consulta = em.createQuery("Select u from Usuarios u");
+            Query consulta = em.createQuery("Select u from Usuario u", Usuario.class);
             usuario = consulta.getResultList();
 
         } catch (Exception e) {

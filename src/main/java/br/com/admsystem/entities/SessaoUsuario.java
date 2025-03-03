@@ -1,15 +1,15 @@
         package entities;
 
 public class SessaoUsuario {
-    private static int idUsuarioLogado;
+    private static Usuario idUsuarioLogado;
     private static String nomeUsuario;
     private static String cargo;
 
-    public static int getIdUsuarioLogado() {
+    public static Usuario getIdUsuarioLogado() {
         return idUsuarioLogado;
     }
 
-    public static void setIdUsuarioLogado(int idUsuarioLogado) {
+    public static void setIdUsuarioLogado(Usuario idUsuarioLogado) {
         SessaoUsuario.idUsuarioLogado = idUsuarioLogado;
     }
 
@@ -26,11 +26,11 @@ public class SessaoUsuario {
     }
 
     public static void setCargo(String cargo) {
-        SessaoUsuario.cargo = cargo; 
+        SessaoUsuario.cargo = cargo;
     }
 
     public static void logout() {
-        idUsuarioLogado = -1; 
+        idUsuarioLogado = null; 
     }
 }
 

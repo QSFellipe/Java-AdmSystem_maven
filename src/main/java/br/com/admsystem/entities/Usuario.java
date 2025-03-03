@@ -10,17 +10,22 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuario")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
     
     @Column(name = "nome_usuario")
     private String nomeUsuario;
     
+    @Column(name = "email")
     private String email;
+    
+    @Column(name = "senha")
     private String senha;
+    
+    @Column(name = "cargo")
     private String cargo;
     
     @Column(name = "data_criacao")
@@ -72,10 +77,6 @@ public class Usuario {
 
     public void setDataCriacao(LocalDate dataCriacao) {
         this.dataCriacao = dataCriacao;
-    }
-
-    public boolean isEmpty() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
  
 }

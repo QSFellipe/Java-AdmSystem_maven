@@ -292,7 +292,7 @@ public class telaInicial extends javax.swing.JFrame {
             if (userAutenticado != null) {
                 JOptionPane.showMessageDialog(null, "Login realizado com sucesso! Bem-vindo(a) " + userAutenticado.getNomeUsuario());
                 
-                SessaoUsuario.setIdUsuarioLogado(userAutenticado.getId());
+                SessaoUsuario.setIdUsuarioLogado(userAutenticado);
                 SessaoUsuario.setNomeUsuario(userAutenticado.getNomeUsuario());
                 SessaoUsuario.setCargo(userAutenticado.getCargo());
                 
