@@ -2,14 +2,18 @@ package br.com.admsystem.persistencia;
 
 import entities.Usuario;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import javax.naming.AuthenticationException;
 import javax.swing.JOptionPane;
 
 public class UsuarioDAO {
 
     public Usuario cadastrar(Usuario u) {
-
         //Instancia o EntityManager
         EntityManager em = JPAUtil.getEntityManager();
 
@@ -56,7 +60,7 @@ public class UsuarioDAO {
     }
 
     public void excluir(int id) {
-        
+
         //Instancia o EntityManager
         EntityManager em = JPAUtil.getEntityManager();
         try {
@@ -75,4 +79,53 @@ public class UsuarioDAO {
             JPAUtil.closeEntityManager();
         }
     }
+
+    public Usuario pesquisarId(int id) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            TypedQuery<Usuario> consulta = em.createQuery("Select u from Usuarios u Where u.id = :u.id", Usuario.class);
+            consulta.setParameter("id", id);
+            return consulta.getSingleResult();
+            
+        }catch(NoResultException e){
+            System.out.println("Erro ao buscar usuario");
+            return null;
+        } catch (Exception e) {
+            throw new RuntimeException("erro");
+        } finally {
+            JPAUtil.closeEntityManager();
+        }
+    }
+
+    public List<Usuario> pesquisar() {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<Usuario> usuario = new ArrayList<>();
+
+        try {
+            Query consulta = em.createQuery("Select u from Usuarios u");
+            usuario = consulta.getResultList();
+
+        } catch (Exception e) {
+            throw new RuntimeException("erro");
+        } finally {
+            JPAUtil.closeEntityManager();
+        }
+        return usuario;
+    }
+
+    public void atualizar(Usuario u) {
+        EntityManager em = JPAUtil.getEntityManager();
+
+        try {
+            em.getTransaction().begin();
+            em.merge(u);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            System.out.println("Não foi possível atualizar" + e.getMessage());
+        } finally {
+            JPAUtil.closeEntityManager();
+        }
+    }
+
 }

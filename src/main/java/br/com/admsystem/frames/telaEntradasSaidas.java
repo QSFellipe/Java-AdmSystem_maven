@@ -1,11 +1,12 @@
 package br.com.admsystem.frames;
 
+import br.com.admsystem.persistencia.UsuarioDAO;
 import entities.CadastroTransacoes;
 import entities.ListaTransacoes;
 import entities.SessaoUsuario;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import entities.Usuario;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -321,15 +322,16 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
         }
 
         // Cria um formato de data para validar e converter as datas inseridas
-        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-
-        formato.setLenient(false);
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         // Cria um novo objeto para armazenar os dados da transação
-        CadastroTransacoes cadastro = new CadastroTransacoes();
-        cadastro.setId(gerarNovoId());
         int idUsuario = capturarIdUser();
-        cadastro.setIdUsuario(idUsuario);
+        CadastroTransacoes cadastro = new CadastroTransacoes();
+        UsuarioDAO uDAO = new UsuarioDAO();
+        Usuario usuario = uDAO.pesquisarId(idUsuario);
+       
+        cadastro.setId(gerarNovoId());
+        cadastro.setUsuario(usuario);
 
         try {
             // Preenche os dados da transação com os valores dos campos da interface
@@ -339,7 +341,7 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
 
             // Verifica e converte a data de entrada, se preenchida
             if (!txDataEntrada.getText().trim().isEmpty()) {
-                Date dataEntrada = formato.parse(txDataEntrada.getText().trim());
+                LocalDate dataEntrada = LocalDate.parse(txDataEntrada.getText().trim());
                 cadastro.setDataEntrada(dataEntrada);
             } else {
                 cadastro.setDataEntrada(null);
@@ -347,7 +349,7 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
 
             // Verifica e converte a data de saída, se preenchida
             if (!txDataSaida.getText().trim().isEmpty()) {
-                Date dataSaida = formato.parse(txDataSaida.getText().trim());
+                LocalDate dataSaida = LocalDate.parse(txDataSaida.getText().trim());
                 cadastro.setDataSaida(dataSaida);
             } else {
                 cadastro.setDataSaida(null);
@@ -373,9 +375,6 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
             System.out.println("Adicionando transação: " + cadastro);
             ListaTransacoes.adicionar(cadastro);
             System.out.println("Lista após adicionar: " + ListaTransacoes.listar());
-
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(null, "Formato de data inválido. Use o formato dd/MM/yyyy", "Erro", JOptionPane.ERROR_MESSAGE);
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Valor de entrada ou saída inválido. Use um número válido.", "Erro", JOptionPane.ERROR_MESSAGE);

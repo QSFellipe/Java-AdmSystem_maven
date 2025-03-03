@@ -221,7 +221,7 @@ public class telaListagem extends javax.swing.JFrame {
             //Adiciona ao Jtable os atributos
             model.addRow(new Object[]{
                 u.getId(),
-                u.getIdUsuario(),
+                u.getUsuario(),
                 u.getCategoria(),
                 u.getDescricao(),
                 dataEntradaFormatada,

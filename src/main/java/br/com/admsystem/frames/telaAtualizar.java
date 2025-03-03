@@ -5,6 +5,8 @@ import entities.ListaTransacoes;
 import java.awt.HeadlessException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -383,9 +385,8 @@ public class telaAtualizar extends javax.swing.JFrame {
         }
 
         // Configura o formato de data para validação e conversão
-        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-        formato.setLenient(false);
-
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        
         try {
 
             // Atualiza os dados da transação com os valores dos campos da interface
@@ -395,7 +396,7 @@ public class telaAtualizar extends javax.swing.JFrame {
 
             // Verifica e atualiza a data de entrada, se preenchida
             if (!txDataEntrada.getText().trim().isEmpty()) {
-                Date dataEntrada = formato.parse(txDataEntrada.getText().trim());
+                LocalDate dataEntrada = LocalDate.parse(txDataEntrada.getText().trim());
                 transacao.setDataEntrada(dataEntrada);
             } else {
                 transacao.setDataEntrada(null);
@@ -403,7 +404,7 @@ public class telaAtualizar extends javax.swing.JFrame {
 
             // Verifica e atualiza a data de saída, se preenchida
             if (!txDataSaida.getText().trim().isEmpty()) {
-                Date dataSaida = formato.parse(txDataSaida.getText().trim());
+                LocalDate dataSaida = LocalDate.parse(txDataSaida.getText().trim());
                 transacao.setDataSaida(dataSaida);
             } else {
                 transacao.setDataSaida(null);
@@ -431,8 +432,6 @@ public class telaAtualizar extends javax.swing.JFrame {
             ListaTransacoes.listar();
             limparCampos();
 
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(null, "Formato de data inválido. Use o formato dd/MM/yyyy.", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Valor de entrada ou saída inválido. Use um número válido.", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (HeadlessException e) {

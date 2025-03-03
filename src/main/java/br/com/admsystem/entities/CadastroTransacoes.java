@@ -12,7 +12,6 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.time.LocalDate;
 
-
 @Entity
 @Table(name = "cadastro_transacoes")    
 public class CadastroTransacoes {
@@ -52,12 +51,12 @@ public class CadastroTransacoes {
         this.id = id;
     }
 
-    public Usuario getIdUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setIdUsuario(Usuario idUsuario) {
-        this.usuario = idUsuario;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public String getCategoria() {

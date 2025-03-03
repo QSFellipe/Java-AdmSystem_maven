@@ -44,4 +44,9 @@ public class CadastroTransacoesDAO {
             JPAUtil.closeEntityManager();
         }
     }
+    
+    //update cadastro
+    
+    //buscar os cadastros
+    
 }

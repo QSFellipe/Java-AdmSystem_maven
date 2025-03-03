@@ -5,14 +5,14 @@ public class SessaoUsuario {
     private static String nomeUsuario;
     private static String cargo;
 
-    public static String getCargo() {
-        return cargo;
+    public static int getIdUsuarioLogado() {
+        return idUsuarioLogado;
     }
 
-    public static void setCargo(String cargo) {
-        SessaoUsuario.cargo = cargo;
+    public static void setIdUsuarioLogado(int idUsuarioLogado) {
+        SessaoUsuario.idUsuarioLogado = idUsuarioLogado;
     }
-    
+
     public static String getNomeUsuario() {
         return nomeUsuario;
     }
@@ -20,13 +20,13 @@ public class SessaoUsuario {
     public static void setNomeUsuario(String nomeUsuario) {
         SessaoUsuario.nomeUsuario = nomeUsuario;
     }
-    
-    public static void setIdUsuarioLogado(int id) {
-        idUsuarioLogado = id;
+
+    public static String getCargo() {
+        return cargo;
     }
 
-    public static int getIdUsuarioLogado() {
-        return idUsuarioLogado;
+    public static void setCargo(String cargo) {
+        SessaoUsuario.cargo = cargo; 
     }
 
     public static void logout() {
