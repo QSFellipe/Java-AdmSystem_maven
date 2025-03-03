@@ -7,9 +7,6 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import javax.naming.AuthenticationException;
-import javax.swing.JOptionPane;
 
 public class UsuarioDAO {
 
@@ -38,11 +35,6 @@ public class UsuarioDAO {
         Usuario usuario = null;
 
         try {
-            //Verificacao se email e senha são nulos
-            if (email == null || senha == null) {
-                throw new IllegalArgumentException("Email e senha não podem ser nulos.");
-            }
-
             //Consulta JPQL
             String jpql = "SELECT u FROM Usuario u WHERE u.email = :email AND u.senha = :senha";
             TypedQuery<Usuario> query = em.createQuery(jpql, Usuario.class);
@@ -86,12 +78,13 @@ public class UsuarioDAO {
             TypedQuery<Usuario> consulta = em.createQuery("Select u from Usuarios u Where u.id = :u.id", Usuario.class);
             consulta.setParameter("id", id);
             return consulta.getSingleResult();
-            
-        }catch(NoResultException e){
+
+        } catch (NoResultException e) {
             System.out.println("Erro ao buscar usuario");
             return null;
         } catch (Exception e) {
-            throw new RuntimeException("erro");
+            System.out.println("Erro ao buscar usuario");
+            return null;
         } finally {
             JPAUtil.closeEntityManager();
         }
@@ -125,6 +118,21 @@ public class UsuarioDAO {
             System.out.println("Não foi possível atualizar" + e.getMessage());
         } finally {
             JPAUtil.closeEntityManager();
+        }
+    }
+
+    public Usuario buscarEmail(String email) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            return em.createQuery("SELECT u FROM Usuario u WHERE u.email = :email", Usuario.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Erro");
+            return null;
         }
     }
 

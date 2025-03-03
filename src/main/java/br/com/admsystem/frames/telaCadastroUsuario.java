@@ -1,5 +1,6 @@
 package br.com.admsystem.frames;
 
+import br.com.admsystem.persistencia.UsuarioDAO;
 import entities.ListaUsuario;
 import entities.Usuario;
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ public class telaCadastroUsuario extends javax.swing.JFrame {
         comboCargo = new javax.swing.JComboBox<>();
         btnCadastrar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -160,9 +161,7 @@ public class telaCadastroUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_comboCargoActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-        if (cadastrarUser()) {
-            this.dispose();
-        }
+        cadastrarUser();
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     /**
@@ -213,50 +212,47 @@ public class telaCadastroUsuario extends javax.swing.JFrame {
     private javax.swing.JTextField txNome;
     private javax.swing.JTextField txSenha;
     // End of variables declaration//GEN-END:variables
-        public boolean cadastrarUser() {
+    public void cadastrarUser() {
+        Usuario usuario = new Usuario();
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+
         //Verificacao dos campos
         if (!validarCampos()) {
-            return false;
+            return;
         }
 
         //Definicao do formato da data
         LocalDate dataAtual = LocalDate.now();
-        String email = txEmail.getText();
 
-        //Criacao do Array chamando o metodo listar//
-        List<Usuario> listaUsuarios = ListaUsuario.listar();
-
-        //Validaçao de email existente//
-        if (emailJaCadastrado(email, listaUsuarios)) {
-            JOptionPane.showMessageDialog(null, "E-mail já cadastrado!", "Erro", JOptionPane.ERROR_MESSAGE);
+        usuario.setEmail(txEmail.getText());
+        Usuario usuarioExistente = usuarioDAO.buscarEmail(usuario.getEmail());
+        if (usuarioExistente != null && txEmail.getText().equals(usuarioExistente.getEmail())) {
+            JOptionPane.showMessageDialog(null, "Usuário com email já cadastrado");
             txEmail.setText("");
-            return false;
+            txSenha.setText("");
+            return;
         }
-
-        Usuario usuario = new Usuario();
 
         //Atribucao de valores dos campos para o objeto//
         try {
-            usuario.setId(gerarNovoId());
-            usuario.setNomeUsuario(txNome.getText());
             usuario.setEmail(txEmail.getText());
-            usuario.setSenha(txSenha.getText());
+            usuario.setNomeUsuario(txNome.getText());
             usuario.setCargo(comboCargo.getSelectedItem().toString());
             usuario.setDataCriacao(dataAtual);
+            usuario.setSenha(txSenha.getText());  
 
-            ListaUsuario.adicionar(usuario);
+            usuarioDAO.cadastrar(usuario);
 
             JOptionPane.showMessageDialog(null, "Usuário " + usuario.getNomeUsuario() + " cadastrado com sucesso");
+            this.dispose();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro ao cadastrar usuário", "Erro", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            txEmail.setText("");
+            txNome.setText("");
+            txSenha.setText("");
         }
 
-        //Limpa os campos
-        txEmail.setText("");
-        txNome.setText("");
-        txSenha.setText("");
-
-        return true;
     }
 
     public boolean validarCampos() {
@@ -269,36 +265,9 @@ public class telaCadastroUsuario extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Insira o Email para continuar\nExemplo: exemplo@gmail.com!");
             return false;
         } else if (txSenha.getText().isEmpty()) {
-            JOptionPane.showConfirmDialog(null, "Crie sua Senha");
+            JOptionPane.showMessageDialog(null, "Crie sua Senha");
             return false;
         }
         return true;
-    }
-
-    private int gerarNovoId() {
-        List<Usuario> usuario = ListaUsuario.listar();
-
-        if (usuario.isEmpty()) {
-            return 1;
-        }
-
-        //Incrementação do ID 
-        int maiorId = usuario.stream()
-                .mapToInt(Usuario::getId)
-                .max()
-                .orElse(0);
-
-        return maiorId + 1;
-    }
-
-    public boolean emailJaCadastrado(String email, List<Usuario> listaUsuarios) {
-
-        //Verifica se o email ja foi cadastrado anteriormente
-        for (Usuario u : listaUsuarios) {
-            if (u.getEmail().equals(txEmail.getText())) {
-                return true;
-            }
-        }
-        return false;
     }
 }

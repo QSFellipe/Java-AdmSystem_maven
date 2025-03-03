@@ -6,7 +6,7 @@ import jakarta.persistence.Persistence;
 
 public class JPAUtil {
 
-    private static final String PERSISTENCE_UNIT = "adm_system";
+    private static final String PERSISTENCE_UNIT = "adm_system-PU";
 
     private static EntityManager em;
     private static EntityManagerFactory emf;

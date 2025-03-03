@@ -1,4 +1,4 @@
-package entities;
+        package entities;
 
 public class SessaoUsuario {
     private static int idUsuarioLogado;

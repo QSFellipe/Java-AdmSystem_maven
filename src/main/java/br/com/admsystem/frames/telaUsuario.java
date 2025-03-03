@@ -1,5 +1,6 @@
 package br.com.admsystem.frames;
 
+import br.com.admsystem.persistencia.UsuarioDAO;
 import entities.ListaUsuario;
 import entities.Usuario;
 import java.util.List;
@@ -10,6 +11,8 @@ public class telaUsuario extends javax.swing.JFrame {
 
     public telaUsuario() {
         initComponents();
+        setLocationRelativeTo(null);
+        preencherTabela();
     }
 
     @SuppressWarnings("unchecked")
@@ -320,19 +323,35 @@ public class telaUsuario extends javax.swing.JFrame {
     private javax.swing.JTextField txId;
     private javax.swing.JTextField txNome;
     // End of variables declaration//GEN-END:variables
-    
-      public void listarTabela() {
-      // Obtém o modelo da tabela e limpa todas as linhas existentes
+
+    public void listarTabela(List<Usuario> usuarios) {
+        // Obtém o modelo da tabela e limpa todas as linhas existentes
         DefaultTableModel model = (DefaultTableModel) tableUsuarios.getModel();
         model.setRowCount(0);
-        
+
         //Obtem os dados cadastrados com base no método listar()
-        for (Usuario u : ListaUsuario.listar()) {
-            model.addRow(new Object[]{u.getId(), u.getNomeUsuario(), u.getEmail(), u.getCargo(), u.getSenha()});
+        for (Usuario u : usuarios) {
+            model.addRow(new Object[]{
+                u.getId(),
+                u.getNomeUsuario(),
+                u.getEmail(),
+                u.getCargo(),
+                u.getSenha()});
         }
     }
 
-    public Usuario getId(Integer id) { 
+    private void preencherTabela() {
+        UsuarioDAO uDao = new UsuarioDAO();
+        try {
+                List<Usuario> listUser = uDao.pesquisar();
+                listarTabela(listUser);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
+        }
+    }
+
+    public Usuario getId(Integer id) {
         // Obtém a lista de usuários
         List<Usuario> usuario = ListaUsuario.listar();
 
@@ -350,7 +369,7 @@ public class telaUsuario extends javax.swing.JFrame {
                 }
             }
         } catch (NullPointerException e) {
-            
+
             JOptionPane.showMessageDialog(null, "Nenhum usuário cadastrado!" + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
         return null;
@@ -364,8 +383,8 @@ public class telaUsuario extends javax.swing.JFrame {
 
         Integer id = Integer.valueOf(txId.getText().trim());
         Usuario usuario = getId(id);
-        
-         // Verifica se o usuário foi encontrado
+
+        // Verifica se o usuário foi encontrado
         if (usuario == null) {
             JOptionPane.showMessageDialog(null, "Usuário(a) não encontrado(a)!", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
@@ -424,7 +443,7 @@ public class telaUsuario extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "O campo ID não pode estar vazio.", "Erro", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         // Verifica se o campo contém apenas números
         if (!idText.matches("\\d+")) {
             JOptionPane.showMessageDialog(null, "O campo ID deve conter apenas números.", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -440,23 +459,23 @@ public class telaUsuario extends javax.swing.JFrame {
         int linhaSelecionada = tableUsuarios.getSelectedRow();
 
         if (linhaSelecionada != -1) {// Verifica se uma linha foi selecionada
-            
+
             // Solicita confirmação do usuário para excluir o registro
             int resposta = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir esta transação?", "Confirmação", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE
             );
-            
+
             if (resposta == JOptionPane.YES_OPTION) {
                 // Obtém o ID do usuário da linha selecionada
                 int idUser = (int) tableUsuarios.getValueAt(linhaSelecionada, 0);
-                
+
                 // Remove o usuário da lista
                 List<Usuario> usuario = ListaUsuario.listar();
                 usuario.removeIf(transacao -> transacao.getId() == idUser);
-                
+
                 // Remove a linha da tabela
                 DefaultTableModel model = (DefaultTableModel) tableUsuarios.getModel();
                 model.removeRow(linhaSelecionada);
-                
+
                 // Notifica a tabela que os dados foram alterados
                 model.fireTableDataChanged();
 

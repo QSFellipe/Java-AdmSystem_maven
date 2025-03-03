@@ -14,6 +14,7 @@ public class telaEntradasSaidas extends javax.swing.JFrame {
 
     public telaEntradasSaidas() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     @SuppressWarnings("unchecked")

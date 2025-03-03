@@ -1,17 +1,15 @@
 package br.com.admsystem.frames;
 
-import entities.ListaUsuario;
+import br.com.admsystem.persistencia.UsuarioDAO;
 import entities.SessaoUsuario;
 import entities.Usuario;
-import java.util.List;
 import javax.swing.JOptionPane;
 
 public class telaInicial extends javax.swing.JFrame {
 
-    private telaUsuario telaUsuario;
+    
 
     public telaInicial() {
-        this.telaUsuario = new telaUsuario();
         initComponents();
         setLocationRelativeTo(null);
     }
@@ -211,17 +209,19 @@ public class telaInicial extends javax.swing.JFrame {
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
         String email = txEmail.getText();
         String senha = txSenha.getText();
-        validarCampos();
-        try {
-            if (AutenticacaoUser(email, senha)) {
-                telaSistema ts = new telaSistema();
-                ts.setVisible(true);
-                this.setVisible(false);
 
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro");
+        // Valida os campos antes de tentar autenticar
+        if (!validarCampos()) {
+            return;
         }
+
+        try {
+            AutenticacaoUser(email, senha);
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro ao autenticar usuário: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+
 
     }//GEN-LAST:event_btnEntrarActionPerformed
 
@@ -281,42 +281,42 @@ public class telaInicial extends javax.swing.JFrame {
     private javax.swing.JTextField txEmail;
     private javax.swing.JPasswordField txSenha;
     // End of variables declaration//GEN-END:variables
-    public boolean AutenticacaoUser(String email, String senha) {
+    
+    public void AutenticacaoUser(String email, String senha) {
         // Obtém a lista completa de usuários cadastrados
-        List<Usuario> listaCompleta = ListaUsuario.listar();
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+  
+        try {
+            Usuario userAutenticado = usuarioDAO.autenticar(email, senha);
 
-        // Verifica se a lista de usuários está vazia
-        if (listaCompleta.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nenhum usuário cadastrado", "Erro", JOptionPane.ERROR_MESSAGE);
-            LimparCampos();
-            return false;
-        }
-
-        // Percorre a lista de usuários para verificar se o email e a senha correspondem
-        for (Usuario u : listaCompleta) {
-            if (email.equals(u.getEmail()) && senha.equals(u.getSenha())) {
-                // Se o login for bem-sucedido, exibe uma mensagem de boas-vindas
-                JOptionPane.showMessageDialog(this, "Login bem-sucedido!\nBem-Vindo " + u.getNomeUsuario(), "ADM System", JOptionPane.INFORMATION_MESSAGE);
-
-                // Armazena os dados do usuário logado na sessão
-                SessaoUsuario.setIdUsuarioLogado(u.getId());
-                SessaoUsuario.setNomeUsuario(u.getNomeUsuario());
-                SessaoUsuario.setCargo(u.getCargo());
-
-                return true;
+            if (userAutenticado != null) {
+                JOptionPane.showMessageDialog(null, "Login realizado com sucesso! Bem-vindo(a) " + userAutenticado.getNomeUsuario());
+                
+                SessaoUsuario.setIdUsuarioLogado(userAutenticado.getId());
+                SessaoUsuario.setNomeUsuario(userAutenticado.getNomeUsuario());
+                SessaoUsuario.setCargo(userAutenticado.getCargo());
+                
+                telaSistema ts = new telaSistema();
+                ts.setVisible(true);
+                this.setVisible(false);
+                
+            } else {
+                JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos!", "Erro", JOptionPane.ERROR_MESSAGE);
+                LimparCampos();
             }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
         }
-        // Se o email ou a senha estiverem incorretos, exibe uma mensagem de erro
-        JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos!", "Erro", JOptionPane.ERROR_MESSAGE);
-        LimparCampos();
-        return false;
+
     }
 
-    public void validarCampos() {
+    public boolean validarCampos() {
         // Verifica se os campos de email e senha estão vazios
         if (txEmail.getText().isEmpty() || txSenha.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Digite Email e Senha para acessar o sistema!");
+            return false;
         }
+        return true;
     }
 
     public void LimparCampos() {

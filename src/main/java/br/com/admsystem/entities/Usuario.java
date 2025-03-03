@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Table(name = "usuarios")
 public class Usuario {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
     @Column(name = "nome_usuario")
@@ -23,6 +23,7 @@ public class Usuario {
     private String senha;
     private String cargo;
     
+    @Column(name = "data_criacao")
     private LocalDate dataCriacao;
         
     public int getId() {
@@ -71,6 +72,10 @@ public class Usuario {
 
     public void setDataCriacao(LocalDate dataCriacao) {
         this.dataCriacao = dataCriacao;
+    }
+
+    public boolean isEmpty() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
  
 }
