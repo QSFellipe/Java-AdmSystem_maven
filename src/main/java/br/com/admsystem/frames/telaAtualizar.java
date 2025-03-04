@@ -2,12 +2,9 @@ package br.com.admsystem.frames;
 
 import br.com.admsystem.persistencia.CadastroTransacoesDAO;
 import entities.CadastroTransacoes;
-import entities.ListaTransacoes;
 import java.awt.HeadlessException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import javax.swing.JOptionPane;
 
 public class telaAtualizar extends javax.swing.JFrame {
@@ -452,7 +449,7 @@ public class telaAtualizar extends javax.swing.JFrame {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         // Verifica se a transação foi encontrada
-        if (cadastroTransacoes != null) {
+        if (cadastro != null) {
             try {
                 // Preenche os campos da interface com os dados da transação
                 cbCategoria.setSelectedItem(cadastro.getCategoria());

@@ -1,7 +1,6 @@
 package br.com.admsystem.frames;
 
 import br.com.admsystem.persistencia.UsuarioDAO;
-import entities.ListaUsuario;
 import entities.Usuario;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -27,7 +26,6 @@ public class telaUsuario extends javax.swing.JFrame {
         lbDescricao = new javax.swing.JLabel();
         btnAtualizar = new javax.swing.JButton();
         btnPesquisar1 = new javax.swing.JButton();
-        btnExcluir = new javax.swing.JButton();
         lbNome = new javax.swing.JLabel();
         txNome = new javax.swing.JTextField();
         lbEmail = new javax.swing.JLabel();
@@ -50,7 +48,7 @@ public class telaUsuario extends javax.swing.JFrame {
 
             },
             new String [] {
-                "id", "nome_usuario", "email", "cargo", "senha"
+                "id", "nome_usuario", "email", "cargo"
             }
         ));
         jScrollPane1.setViewportView(tableUsuarios);
@@ -90,16 +88,6 @@ public class telaUsuario extends javax.swing.JFrame {
         btnPesquisar1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnPesquisar1ActionPerformed(evt);
-            }
-        });
-
-        btnExcluir.setBackground(new java.awt.Color(153, 153, 153));
-        btnExcluir.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        btnExcluir.setForeground(new java.awt.Color(255, 255, 255));
-        btnExcluir.setText("Excluir");
-        btnExcluir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnExcluirActionPerformed(evt);
             }
         });
 
@@ -174,8 +162,7 @@ public class telaUsuario extends javax.swing.JFrame {
                                 .addComponent(btnPesquisar1)
                                 .addGap(29, 29, 29)
                                 .addComponent(btnAtualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(152, 152, 152))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(lbEmail)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -183,8 +170,8 @@ public class telaUsuario extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(lbCargo)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbCargo, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(20, 20, 20)))
+                                .addComponent(cbCargo, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(20, 20, 20)))))
                 .addContainerGap())
             .addComponent(jScrollPane1)
         );
@@ -203,7 +190,6 @@ public class telaUsuario extends javax.swing.JFrame {
                     .addComponent(lbDescricao)
                     .addComponent(btnPesquisar1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAtualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnExcluir, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txId, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(40, 40, 40)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -240,6 +226,14 @@ public class telaUsuario extends javax.swing.JFrame {
         atualizar();
     }//GEN-LAST:event_btnAtualizarActionPerformed
 
+    private void txEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txEmailActionPerformed
+
+    }//GEN-LAST:event_txEmailActionPerformed
+
+    private void cbCargoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCargoActionPerformed
+
+    }//GEN-LAST:event_cbCargoActionPerformed
+
     private void btnPesquisar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisar1ActionPerformed
         limparCampos();
 
@@ -257,18 +251,6 @@ public class telaUsuario extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Erro, insira somente números no campo id " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnPesquisar1ActionPerformed
-
-    private void btnExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirActionPerformed
-        excluirRegistro();
-    }//GEN-LAST:event_btnExcluirActionPerformed
-
-    private void txEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txEmailActionPerformed
-
-    }//GEN-LAST:event_txEmailActionPerformed
-
-    private void cbCargoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCargoActionPerformed
-
-    }//GEN-LAST:event_cbCargoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -307,7 +289,6 @@ public class telaUsuario extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtualizar;
-    private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnPesquisar1;
     private javax.swing.JButton btnVoltar;
     private javax.swing.JComboBox<String> cbCargo;
@@ -343,8 +324,8 @@ public class telaUsuario extends javax.swing.JFrame {
     private void preencherTabela() {
         UsuarioDAO uDao = new UsuarioDAO();
         try {
-                List<Usuario> listUser = uDao.pesquisar();
-                listarTabela(listUser);
+            List<Usuario> listUser = uDao.pesquisar();
+            listarTabela(listUser);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
@@ -353,24 +334,15 @@ public class telaUsuario extends javax.swing.JFrame {
 
     public Usuario getId(Integer id) {
         // Obtém a lista de usuários
-        List<Usuario> usuario = ListaUsuario.listar();
+        UsuarioDAO uDAO = new UsuarioDAO();
+        Usuario usuario = uDAO.pesquisarId(id);
 
         System.out.println("Lista de usuários: " + usuario);
 
-        try {
-            // Verifica se a lista de usuários não é nula e não está vazia
-            if (usuario != null && !usuario.isEmpty()) {
-                // Percorre a lista para encontrar o usuário com o ID correspondente
-                for (Usuario user : usuario) {
-                    // Usa equals para comparação de objetos
-                    if (user.getId() == id) {
-                        return user;
-                    }
-                }
-            }
-        } catch (NullPointerException e) {
-
-            JOptionPane.showMessageDialog(null, "Nenhum usuário cadastrado!" + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        if (usuario != null) {
+            return usuario;
+        } else {
+            JOptionPane.showMessageDialog(null, "Nenhum usuário com ID fornecido!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
         return null;
     }
@@ -380,7 +352,8 @@ public class telaUsuario extends javax.swing.JFrame {
         if (!validaID()) {
             return;
         }
-
+        
+        UsuarioDAO uDAO = new UsuarioDAO();
         Integer id = Integer.valueOf(txId.getText().trim());
         Usuario usuario = getId(id);
 
@@ -399,7 +372,8 @@ public class telaUsuario extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Dados do usuário atualizados!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 
             // Atualiza a lista de usuários e limpa os campos
-            ListaUsuario.listar();
+            preencherTabela();
+            uDAO.atualizar(usuario);
             limparCampos();
 
         } catch (Exception e) {
@@ -452,37 +426,5 @@ public class telaUsuario extends javax.swing.JFrame {
         }
         // Retorna true se o ID for válido
         return true;
-    }
-
-    public void excluirRegistro() {
-        // Obtém a linha selecionada na tabela
-        int linhaSelecionada = tableUsuarios.getSelectedRow();
-
-        if (linhaSelecionada != -1) {// Verifica se uma linha foi selecionada
-
-            // Solicita confirmação do usuário para excluir o registro
-            int resposta = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir esta transação?", "Confirmação", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE
-            );
-
-            if (resposta == JOptionPane.YES_OPTION) {
-                // Obtém o ID do usuário da linha selecionada
-                int idUser = (int) tableUsuarios.getValueAt(linhaSelecionada, 0);
-
-                // Remove o usuário da lista
-                List<Usuario> usuario = ListaUsuario.listar();
-                usuario.removeIf(transacao -> transacao.getId() == idUser);
-
-                // Remove a linha da tabela
-                DefaultTableModel model = (DefaultTableModel) tableUsuarios.getModel();
-                model.removeRow(linhaSelecionada);
-
-                // Notifica a tabela que os dados foram alterados
-                model.fireTableDataChanged();
-
-                JOptionPane.showMessageDialog(null, "Transação removida com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "Nenhuma linha selecionada.", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
     }
 }

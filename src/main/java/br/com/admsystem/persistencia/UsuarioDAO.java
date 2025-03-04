@@ -1,5 +1,6 @@
 package br.com.admsystem.persistencia;
 
+import static br.com.admsystem.persistencia.JPAUtil.getEntityManager;
 import entities.Usuario;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -7,7 +8,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
-    
+
 public class UsuarioDAO {
 
     public Usuario cadastrar(Usuario u) {
@@ -51,28 +52,7 @@ public class UsuarioDAO {
         return usuario;
     }
 
-    public void excluir(int id) {
-
-        //Instancia o EntityManager
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            //Remove o objeto do banco
-            Usuario u = em.find(Usuario.class, id);
-            if (u != null) {
-                em.getTransaction().begin();
-                em.remove(u);
-                em.getTransaction().commit();
-            }
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw e;
-        } finally {
-            //Fecha o EntityManager
-            JPAUtil.closeEntityManager();
-        }
-    }
-
-    public Usuario pesquisarId(int id) {
+     public Usuario pesquisarId(int id) {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             TypedQuery<Usuario> consulta = em.createQuery("Select u from Usuario u Where u.id = :id", Usuario.class);
@@ -83,7 +63,7 @@ public class UsuarioDAO {
             System.out.println("Usuário com ID " + id + " não encontrado.");
             return null;
         } catch (Exception e) {
-            System.out.println("Erro ao buscar usuário: "+ e.getMessage());
+            System.out.println("Erro ao buscar usuário: " + e.getMessage());
             return null;
         } finally {
             JPAUtil.closeEntityManager();

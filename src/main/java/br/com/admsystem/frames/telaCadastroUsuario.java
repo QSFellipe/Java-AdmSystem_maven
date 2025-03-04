@@ -1,10 +1,8 @@
 package br.com.admsystem.frames;
 
 import br.com.admsystem.persistencia.UsuarioDAO;
-import entities.ListaUsuario;
 import entities.Usuario;
 import java.time.LocalDate;
-import java.util.List;
 import javax.swing.JOptionPane;
 
 public class telaCadastroUsuario extends javax.swing.JFrame {
@@ -213,33 +211,33 @@ public class telaCadastroUsuario extends javax.swing.JFrame {
     private javax.swing.JTextField txSenha;
     // End of variables declaration//GEN-END:variables
     public void cadastrarUser() {
-        Usuario usuario = new Usuario();
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
-        
         //Verificacao dos campos
         if (!validarCampos()) {
             return;
         }
 
+        Usuario usuario = new Usuario();
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+
         //Definicao do formato da data
         LocalDate dataAtual = LocalDate.now();
 
-        usuario.setEmail(txEmail.getText());
+        usuario.setEmail(txEmail.getText().trim());
+
         Usuario usuarioExistente = usuarioDAO.buscarEmail(usuario.getEmail());
-        if (usuarioExistente != null && txEmail.getText().equals(usuarioExistente.getEmail())) {
+
+        if (usuarioExistente != null) {
             JOptionPane.showMessageDialog(null, "Usuário com email já cadastrado");
             txEmail.setText("");
             txSenha.setText("");
             return;
         }
-
-        //Atribucao de valores dos campos para o objeto//
         try {
             usuario.setNomeUsuario(txNome.getText());
             usuario.setCargo(comboCargo.getSelectedItem().toString().trim());
             usuario.setDataCriacao(dataAtual);
-            usuario.setSenha(txSenha.getText());  
-            
+            usuario.setSenha(txSenha.getText());
+
             usuarioDAO.cadastrar(usuario);
 
             JOptionPane.showMessageDialog(null, "Usuário " + usuario.getNomeUsuario() + " cadastrado com sucesso");

@@ -1,16 +1,22 @@
 package br.com.admsystem.frames;
 
 import br.com.admsystem.persistencia.CadastroTransacoesDAO;
+import br.com.admsystem.persistencia.RelatarioDAO;
+import br.com.admsystem.persistencia.UsuarioDAO;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import entities.CadastroTransacoes;
+import entities.Relatorio;
+import entities.SessaoUsuario;
+import entities.Usuario;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.swing.table.DefaultTableModel;
 
@@ -274,6 +280,20 @@ public class telaListagem extends javax.swing.JFrame {
     }
 
     public void salvarArquivo() {
+
+        RelatarioDAO rDAO = new RelatarioDAO();
+        Relatorio r = new Relatorio();
+        Usuario u = new Usuario();
+
+        u = SessaoUsuario.getIdUsuarioLogado();
+
+        if (u == null) {
+            JOptionPane.showMessageDialog(null, "Usuário não autenticado.");
+            return;
+        }
+        
+        LocalDate dataAtual = LocalDate.now();
+
         // Instancia a classe JFileChooser
         JFileChooser fileChooser = new JFileChooser();
 
@@ -287,6 +307,12 @@ public class telaListagem extends javax.swing.JFrame {
         if (selecaoUsuario == JFileChooser.APPROVE_OPTION) {
             // Armazena o caminho completo do arquivo selecionado pelo usuário
             String caminhoArquivo = fileChooser.getSelectedFile().getAbsolutePath();
+
+            r.setArquivo(caminhoArquivo);
+            r.setDataCriacao(dataAtual);
+            r.setIdUsuario(u);
+
+            rDAO.cadastrar(r);
 
             // Adiciona a extensão .pdf ao nome do arquivo, caso o usuário não tenha especificado
             if (!caminhoArquivo.toLowerCase().endsWith(".pdf")) {
@@ -373,10 +399,10 @@ public class telaListagem extends javax.swing.JFrame {
 
     public void excluir() {
         try {
-            if(tableTransacoes.getSelectedRow() == -1){
+            if (tableTransacoes.getSelectedRow() == -1) {
                 JOptionPane.showMessageDialog(null, "Selecione a linha que deseja excluir");
             }
-            
+
             if (tableTransacoes.getSelectedRow() >= 0) {
                 int id = (int) tableTransacoes.getValueAt(tableTransacoes.getSelectedRow(), 0);
 

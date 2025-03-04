@@ -14,11 +14,11 @@ import jakarta.persistence.TemporalType;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "relatorios")
+@Table(name = "relatorio")
 public class Relatorio {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
     @ManyToOne

@@ -1,9 +1,7 @@
 entities\Relatorio.class
 br\com\admsystem\frames\telaEntradasSaidas$3.class
-entities\ListaTransacoes.class
 br\com\admsystem\frames\telaInicial$2.class
 br\com\admsystem\frames\telaSistema$6.class
-br\com\admsystem\frames\telaUsuario$7.class
 br\com\admsystem\persistencia\CadastroTransacoesDAO.class
 br\com\admsystem\frames\telaAtualizar$4.class
 br\com\admsystem\frames\telaUsuario.class
@@ -43,7 +41,6 @@ br\com\admsystem\persistencia\JPAUtil.class
 br\com\admsystem\frames\telaListagem$2.class
 br\com\admsystem\frames\telaUsuario$4.class
 br\com\admsystem\frames\telaEntradasSaidas$1.class
-entities\ListaUsuario.class
 br\com\admsystem\frames\telaSistema$4.class
 entities\Usuario.class
 br\com\admsystem\frames\telaCadastroUsuario$2.class

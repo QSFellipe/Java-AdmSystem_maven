@@ -1,15 +1,12 @@
 package br.com.admsystem.frames;
 
 import br.com.admsystem.persistencia.CadastroTransacoesDAO;
-import br.com.admsystem.persistencia.UsuarioDAO;
 import entities.CadastroTransacoes;
-import entities.ListaTransacoes;
 import entities.SessaoUsuario;
 import entities.Usuario;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 import javax.swing.JOptionPane;
 
 public class telaEntradasSaidas extends javax.swing.JFrame {
