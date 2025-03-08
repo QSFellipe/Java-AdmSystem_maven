@@ -1,6 +1,5 @@
 package br.com.admsystem.persistencia;
 
-import static br.com.admsystem.persistencia.JPAUtil.getEntityManager;
 import entities.Usuario;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -40,8 +39,8 @@ public class UsuarioDAO {
             String jpql = "SELECT u FROM Usuario u WHERE u.email = :email AND u.senha = :senha";
             TypedQuery<Usuario> query = em.createQuery(jpql, Usuario.class);
             query.setParameter("email", email);
-            query.setParameter("senha", senha);
-
+            query.setParameter("senha", HashUtil.gerarHashSHA256(senha));
+            
             usuario = query.getSingleResult();
         } catch (Exception e) {
             System.out.println("Usuário ou senhas incorretos, Tente Novamente");

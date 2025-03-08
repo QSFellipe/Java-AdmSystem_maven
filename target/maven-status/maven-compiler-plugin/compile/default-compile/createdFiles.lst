@@ -17,6 +17,7 @@ br\com\admsystem\frames\telaUsuario$3.class
 br\com\admsystem\frames\telaEntradasSaidas.class
 br\com\admsystem\frames\telaInicial$1.class
 br\com\admsystem\frames\telaUsuario$6.class
+br\com\admsystem\persistencia\HashUtil.class
 br\com\admsystem\frames\telaUsuario$2.class
 br\com\admsystem\frames\telaSistema$1.class
 br\com\admsystem\persistencia\RelatarioDAO.class
